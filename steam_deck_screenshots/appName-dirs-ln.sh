@@ -1,7 +1,12 @@
 #!/bin/bash
 
-# JSON file retrieved from https://api.steampowered.com/ISteamApps/GetAppList/v2/
+# Constants and URLs
+USER_ID=**USER_ID**
+LINK_DIR=~/Pictures  # Directory where symbolic links will be created
+SCRIPT_DIR=$(dirname "$(readlink -f "$0")")  # Directory where the script is located
+API_URL="https://api.steampowered.com/ISteamApps/GetAppList/v2/"
 
+# Function to sanitize names
 sanitize_name() {
     local input="$1"
     local sanitized_name
@@ -14,12 +19,17 @@ sanitize_name() {
     echo "$sanitized_name"
 }
 
-# Target directory (default: /home/deck/.local/share/Steam/userdata/**USER_ID**/760/remote)
-TARGET_DIR=${1:-/home/deck/.local/share/Steam/userdata/**USER_ID**/760/remote}
-LINK_DIR=$(pwd) # Directory where symbolic links will be created
+# Target directory (default: /home/deck/.local/share/Steam/userdata/$USER_ID/760/remote)
+TARGET_DIR=${1:-/home/deck/.local/share/Steam/userdata/$USER_ID/760/remote}
 
-# Steam API URL
-API_URL="https://api.steampowered.com/ISteamApps/GetAppList/v2/"
+# Echo the constants values
+echo 
+echo "Constants values:"
+echo "USER_ID: $USER_ID"
+echo "LINK_DIR: $LINK_DIR"
+echo "SCRIPT_DIR: $SCRIPT_DIR"
+echo "API_URL: $API_URL"
+echo "TARGET_DIR: $TARGET_DIR"
 
 # Check if the directory exists
 if [ ! -d "$TARGET_DIR" ]; then
@@ -77,14 +87,14 @@ for dir in "$TARGET_DIR"/*; do
     if [[ "$appid" =~ ^[0-9]+$ ]]; then
 
         # Search in hardcoded non-steam links
-        app_name=$(jq -r --argjson appid "$appid" '.applist.apps[] | select(.appid == $appid) | .name' ~/scripts/non-steam-games.json | head -n 1)
+        app_name=$(jq -r --argjson appid "$appid" '.applist.apps[] | select(.appid == $appid) | .name' "$SCRIPT_DIR/non-steam-games.json" | head -n 1)
 
         if [ -n "$app_name" ] && [ "$app_name" != "null" ]; then
             echo "    [NON-STEAM] $app_name"
             sanitized_name=$(sanitize_name "$app_name")
         else
             # Search in snapshot API on disk
-            app_name=$(jq -r --argjson appid "$appid" '.applist.apps[] | select(.appid == $appid) | .name' ~/scripts/steam-api.json | head -n 1)
+            app_name=$(jq -r --argjson appid "$appid" '.applist.apps[] | select(.appid == $appid) | .name' "$SCRIPT_DIR/steam-api.json" | head -n 1)
 
             if [ -n "$app_name" ] && [ "$app_name" != "null" ]; then
                 echo "    [SNAPSHOT] $app_name"
@@ -143,8 +153,8 @@ for dir in "$TARGET_DIR"/*; do
 done
 
 # Add hardcoded non-steam games links from non-steam-games.json
-if jq -e '.applist.hardcoded' ~/scripts/non-steam-games.json > /dev/null; then
-    hardcoded_apps=$(jq -c '.applist.hardcoded[]' ~/scripts/non-steam-games.json)
+if jq -e '.applist.hardcoded' "$SCRIPT_DIR/non-steam-games.json" > /dev/null; then
+    hardcoded_apps=$(jq -c '.applist.hardcoded[]' "$SCRIPT_DIR/non-steam-games.json")
 
     # Iterate over each hardcoded app using a for loop
     for app in $(echo "$hardcoded_apps" | jq -r '. | @base64'); do
@@ -187,8 +197,8 @@ else
 fi
 
 # Display summary debug line
-total_links=$(find . -maxdepth 1 -type l | wc -l)
-echo -e "\n\nProcessing completed. Iterated through $iterated_count elements (excluding appid 7). Total symbolic links in the current directory: $total_links"
+total_links=$(find "$LINK_DIR" -maxdepth 1 -type l | wc -l)
+echo -e "\n\nProcessing completed.\nIterated through $iterated_count elements.\nTotal symbolic links in the output directory: $total_links"
 
 # Compare iterated files and linked files
 echo -e "\nFiles iterated but not linked:"
