@@ -1,0 +1,38 @@
+{
+  "applist": {
+    "apps": [
+      {
+        "appid": 13601924,
+        "name": "Star_Wars_Outlaws"
+      },
+      {
+        "appid": 9218012,
+        "name": "Star_Wars_Outlaws_remote"
+      },
+      {
+        "appid": 1295767,
+        "name": "Star_Wars_Outlaws_remote2"
+      },
+      {
+        "appid": 13425452,
+        "name": "Horizon_Forbidden_West_remote"
+      },
+      {
+        "appid": 4626092,
+        "name": "The_Callisto_Protocol_remote"
+      },
+      {
+        "appid": 16683619,
+        "name": "Assassins_Creed_Mirage"
+      },
+      {
+        "appid": 5562267,
+        "name": "Assassins_Creed_Mirage_remote"
+      },
+	  {
+        "appid": 9351074,
+        "name": "Assassins_Creed_Mirage_remote2"
+      }
+    ]
+  }
+}
