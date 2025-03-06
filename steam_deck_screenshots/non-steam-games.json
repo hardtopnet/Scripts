@@ -33,6 +33,16 @@
         "appid": 9351074,
         "name": "Assassins_Creed_Mirage_remote2"
       }
-    ]
+    ],
+	"hardcoded": [
+	  {
+		"appfolder": "/home/deck/.local/share/Steam/steamapps/compatdata/NonSteamLaunchers/pfx/drive_c/users/steamuser/Documents/My Games/Outlaws/Photos",
+		"name": "Star_Wars_Outlaws_photo"
+	  },
+	  {
+		"appfolder": "/home/deck/.local/share/Steam/steamapps/compatdata/NonSteamLaunchers/pfx/drive_c/users/steamuser/Documents/Assassin's Creed Mirage/photos",
+		"name": "Assassins_Creed_Mirage_photo"
+	  }
+	]
   }
 }
