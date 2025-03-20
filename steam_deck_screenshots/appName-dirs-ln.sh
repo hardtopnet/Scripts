@@ -5,6 +5,8 @@ USER_ID=**USER_ID**
 LINK_DIR=~/Pictures  # Directory where symbolic links will be created
 SCRIPT_DIR=$(dirname "$(readlink -f "$0")")  # Directory where the script is located
 API_URL="https://api.steampowered.com/ISteamApps/GetAppList/v2/"
+NON_STEAM_GAMES="non-steam-games.json"
+STEAM_API="steam-api.json"
 
 # Function to sanitize names
 sanitize_name() {
@@ -27,9 +29,11 @@ echo
 echo "Constants values:"
 echo "USER_ID: $USER_ID"
 echo "LINK_DIR: $LINK_DIR"
-echo "SCRIPT_DIR: $SCRIPT_DIR"
-echo "API_URL: $API_URL"
 echo "TARGET_DIR: $TARGET_DIR"
+echo "API_URL: $API_URL"
+echo "SCRIPT_DIR: $SCRIPT_DIR"
+echo "NON_STEAM_GAMES: $NON_STEAM_GAMES"
+echo "STEAM_API: $STEAM_API"
 
 # Check if the directory exists
 if [ ! -d "$TARGET_DIR" ]; then
@@ -87,14 +91,14 @@ for dir in "$TARGET_DIR"/*; do
     if [[ "$appid" =~ ^[0-9]+$ ]]; then
 
         # Search in hardcoded non-steam links
-        app_name=$(jq -r --argjson appid "$appid" '.applist.apps[] | select(.appid == $appid) | .name' "$SCRIPT_DIR/non-steam-games.json" | head -n 1)
+        app_name=$(jq -r --argjson appid "$appid" '.applist.apps[] | select(.appid == $appid) | .name' "$SCRIPT_DIR/$NON_STEAM_GAMES" | head -n 1)
 
         if [ -n "$app_name" ] && [ "$app_name" != "null" ]; then
             echo "    [NON-STEAM] $app_name"
             sanitized_name=$(sanitize_name "$app_name")
         else
             # Search in snapshot API on disk
-            app_name=$(jq -r --argjson appid "$appid" '.applist.apps[] | select(.appid == $appid) | .name' "$SCRIPT_DIR/steam-api.json" | head -n 1)
+            app_name=$(jq -r --argjson appid "$appid" '.applist.apps[] | select(.appid == $appid) | .name' "$SCRIPT_DIR/$STEAM_API" | head -n 1)
 
             if [ -n "$app_name" ] && [ "$app_name" != "null" ]; then
                 echo "    [SNAPSHOT] $app_name"
@@ -152,9 +156,9 @@ for dir in "$TARGET_DIR"/*; do
     fi
 done
 
-# Add hardcoded non-steam games links from non-steam-games.json
-if jq -e '.applist.hardcoded' "$SCRIPT_DIR/non-steam-games.json" > /dev/null; then
-    hardcoded_apps=$(jq -c '.applist.hardcoded[]' "$SCRIPT_DIR/non-steam-games.json")
+# Add hardcoded non-steam games links from $NON_STEAM_GAMES
+if jq -e '.applist.hardcoded' "$SCRIPT_DIR/$NON_STEAM_GAMES" > /dev/null; then
+    hardcoded_apps=$(jq -c '.applist.hardcoded[]' "$SCRIPT_DIR/$NON_STEAM_GAMES")
 
     # Iterate over each hardcoded app using a for loop
     for app in $(echo "$hardcoded_apps" | jq -r '. | @base64'); do
@@ -193,7 +197,7 @@ if jq -e '.applist.hardcoded' "$SCRIPT_DIR/non-steam-games.json" > /dev/null; th
         fi
     done
 else
-    echo -e "\n    [INFO] No hardcoded links found in non-steam-games.json"
+    echo -e "\n    [INFO] No hardcoded links found in $NON_STEAM_GAMES"
 fi
 
 # Display summary debug line
