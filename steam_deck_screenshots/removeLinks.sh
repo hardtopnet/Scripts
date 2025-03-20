@@ -1,21 +1,21 @@
 #!/bin/bash
 
-# Répertoire cible (par défaut : répertoire courant)
+# Target directory (default: current directory)
 TARGET_DIR=${1:-.}
 
-# Vérifier si le répertoire existe
+# Check if the directory exists
 if [ ! -d "$TARGET_DIR" ]; then
-  echo "Erreur : Le répertoire spécifié '$TARGET_DIR' n'existe pas."
+  echo "Error: The specified directory '$TARGET_DIR' does not exist."
   exit 1
 fi
 
-# Parcourir tous les fichiers et supprimer les liens symboliques
-echo "Suppression des liens symboliques dans le répertoire : $TARGET_DIR"
+# Iterate over all files and remove symbolic links
+echo "Removing symbolic links in the directory: $TARGET_DIR"
 for item in "$TARGET_DIR"/*; do
   if [ -L "$item" ]; then
-    echo "Suppression du lien symbolique : $item"
+    echo "Removing symbolic link: $item"
     rm "$item"
   fi
 done
 
-echo "Tous les liens symboliques ont été supprimés."
+echo "All symbolic links have been removed."
