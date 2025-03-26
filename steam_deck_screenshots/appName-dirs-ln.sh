@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Constants and URLs
-USER_ID=**USER_ID**
+USER_ID=123456 # enter your Steam UsedID here
 LINK_DIR=~/Pictures  # Directory where symbolic links will be created
 SCRIPT_DIR=$(dirname "$(readlink -f "$0")")  # Directory where the script is located
 API_URL="https://api.steampowered.com/ISteamApps/GetAppList/v2/"
