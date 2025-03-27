@@ -1,4 +1,4 @@
-# misc scripts for Windows, Linux, SteamOS
+# Various scripts for Windows, Linux, SteamOS
 
 ## Steam Deck screenshots
 
